@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import AccountRouter from "../src/routes/AccountRoutes"
+// ✅ Correct
+import accountRoutes from './routes/AccountRoutes';
+
 
 dotenv.config()
 
@@ -15,7 +17,7 @@ app.use(express.urlencoded({ extended: true}))
 app.use(cors())
 
 //Router//
-app.use('/api', AccountRouter)
+app.use('/api', accountRoutes)
 
 //MONGO CONNECTION//
 
