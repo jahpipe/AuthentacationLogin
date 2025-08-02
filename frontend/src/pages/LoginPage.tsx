@@ -26,15 +26,19 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post("http://localhost:5000/api/login", form);
+      const API = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${API}/login`, form);
       const { token, account } = response.data;
 
+      // Save token and set default header
       localStorage.setItem("token", token);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       setLoginMessage("Login successful! Redirecting...");
 
+      // Redirect by role
       setTimeout(() => {
         if (account.role === "admin") {
           navigate("/AdminDashboard");
@@ -48,12 +52,12 @@ export function LoginPage() {
     }
   };
 
-  // OPTIONAL: Test token by calling /profile
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const API = import.meta.env.VITE_API_URL;
     if (token) {
       axios
-        .get("http://localhost:5000/api/profile", {
+        .get(`${API}/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -123,7 +127,9 @@ export function LoginPage() {
           </Button>
 
           {loginMessage && (
-            <p className="text-green-600 text-center font-medium mt-4">{loginMessage}</p>
+            <p className="text-green-600 text-center font-medium mt-4">
+              {loginMessage}
+            </p>
           )}
         </form>
       </Card>
