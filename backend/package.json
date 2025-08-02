@@ -32,11 +32,12 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   },
- "_moduleAliases": {
+"_moduleAliases": {
   "@routes": "src/routes",
   "@controllers": "src/controller",
   "@middleware": "src/middleware",
   "@models": "src/models"
 }
+
 
 }
