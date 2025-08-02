@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  
+}
