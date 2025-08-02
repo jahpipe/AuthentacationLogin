@@ -14,7 +14,10 @@ export function LoginPage() {
   });
 
   const [loginMessage, setLoginMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,17 +31,17 @@ export function LoginPage() {
     e.preventDefault();
 
     try {
-      const API = import.meta.env.VITE_API_URL;
       const response = await axios.post(`${API}/login`, form);
+
       const { token, account } = response.data;
 
-      // Save token and set default header
       localStorage.setItem("token", token);
+      localStorage.setItem("role", account.role);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       setLoginMessage("Login successful! Redirecting...");
+      setErrorMessage(null);
 
-      // Redirect by role
       setTimeout(() => {
         if (account.role === "admin") {
           navigate("/AdminDashboard");
@@ -47,25 +50,33 @@ export function LoginPage() {
         }
       }, 1000);
     } catch (err: any) {
-      console.error("Login failed:", err.response?.data || err.message);
-      alert("Login failed. Please check your credentials.");
+      const msg = err.response?.data?.message || "Something went wrong";
+      setLoginMessage(null);
+      setErrorMessage(msg);
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const API = import.meta.env.VITE_API_URL;
     if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get(`${API}/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        .get(`${API}/profile`)
+        .then((res) => {
+          const role = res.data?.role || localStorage.getItem("role");
+          if (role === "admin") {
+            navigate("/AdminDashboard");
+          } else {
+            navigate("/Dashboardusers");
+          }
         })
-        .then((res) => console.log("Verified token:", res.data))
-        .catch((err) => console.warn("Token invalid:", err.response?.data));
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          delete axios.defaults.headers.common["Authorization"];
+        });
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-white dark:from-zinc-900 dark:to-zinc-800 px-4">
@@ -127,8 +138,14 @@ export function LoginPage() {
           </Button>
 
           {loginMessage && (
-            <p className="text-green-600 text-center font-medium mt-4">
+            <p className="text-green-600 text-center font-medium mt-2">
               {loginMessage}
+            </p>
+          )}
+
+          {errorMessage && (
+            <p className="text-red-600 text-center font-medium mt-2">
+              {errorMessage}
             </p>
           )}
         </form>
