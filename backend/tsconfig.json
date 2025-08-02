@@ -7,6 +7,13 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@routes/*": ["routes/*"],
+      "@controllers/*": ["controller/*"],
+      "@middleware/*": ["middleware/*"],
+      "@models/*": ["models/*"]
+    }
   }
 }
