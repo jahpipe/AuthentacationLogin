@@ -19,7 +19,7 @@ app.use('/api', AccountRouter)
 
 //MONGO CONNECTION//
 
-mongoose.connect(process.env.MDB_CONNECTION_STRING as string)
+mongoose.connect(process.env.MDB_CONNECTION_STRING as string) 
 .then(() => console.log("connected to mongoDB"))
 .catch((err) =>console.log("error to connec Db", err))
 

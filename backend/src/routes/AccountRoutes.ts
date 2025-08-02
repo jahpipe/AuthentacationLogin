@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
-import { registerController, loginController } from "../controller/AccountController";
-import { authentecationtoken, authentecationRequest } from "../middleware/authMiddleware";
+import { registerController, loginController }  from "../controller/AccountController";
+import { authentecationtoken, authentecationRequest }  from "../middleware/authMiddleware";
+
+
 
 const router = express.Router();
 
