@@ -3,24 +3,24 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import AccountRouter from "@routes/AccountRoutes";
+import AccountRouter from "../src/routes/AccountRoutes"
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
+const app = express()
 
-// MIDDLEWARE
+//MiDDLE WARE//
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true}))
+app.use(cors())
 
-// ROUTES
-app.use('/api', AccountRouter);
+//Router//
+app.use('/api', AccountRouter)
 
-// MONGODB CONNECTION
+//MONGO CONNECTION//
+
 mongoose.connect(process.env.MDB_CONNECTION_STRING as string)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+.then(() => console.log("connected to mongoDB"))
+.catch((err) =>console.log("error to connec Db", err))
 
 export default app;
