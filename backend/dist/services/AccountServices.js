@@ -22,6 +22,9 @@ const login = async (data) => {
     if (!account) {
         throw new Error("username or password is incorrect");
     }
+    if (account.role !== data.role) {
+        throw new Error("Invalid role selected");
+    }
     const passwordValid = await account.passwordvalidator(data.password);
     if (!passwordValid) {
         throw new Error("username or password is incorrect");

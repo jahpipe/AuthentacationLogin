@@ -57,26 +57,29 @@ export function LoginPage() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      axios
-        .get(`${API}/profile`)
-        .then((res) => {
-          const role = res.data?.role || localStorage.getItem("role");
-          if (role === "admin") {
-            navigate("/AdminDashboard");
-          } else {
-            navigate("/Dashboardusers");
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("role");
-          delete axios.defaults.headers.common["Authorization"];
-        });
-    }
-  }, [navigate]);
+  const token = localStorage.getItem("token");
+  if (token) {
+    axios
+      .get(`${API}/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        const role = res.data?.role || localStorage.getItem("role");
+        if (role === "admin") {
+          navigate("/AdminDashboard");
+        } else {
+          navigate("/Dashboardusers");
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+      });
+  }
+}, [navigate]);
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-white dark:from-zinc-900 dark:to-zinc-800 px-4">
