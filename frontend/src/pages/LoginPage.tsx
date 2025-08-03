@@ -10,7 +10,7 @@ export function LoginPage() {
   const [form, setForm] = useState({
     username: "",
     password: "",
-    role: "user",
+    role: "user", // must match backend expected role
   });
 
   const [loginMessage, setLoginMessage] = useState<string | null>(null);
@@ -19,12 +19,14 @@ export function LoginPage() {
 
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleRoleSelect = (role: "admin" | "user") => {
-    setForm({ ...form, role });
+    setForm((prev) => ({ ...prev, role }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +34,6 @@ export function LoginPage() {
 
     try {
       const response = await axios.post(`${API}/login`, form);
-
       const { token, account } = response.data;
 
       localStorage.setItem("token", token);
@@ -46,19 +47,20 @@ export function LoginPage() {
         if (account.role === "admin") {
           navigate("/AdminDashboard");
         } else {
-          navigate("/Dashboardusers");
+          navigate("/DashboardUsers"); // Adjust if route is different
         }
       }, 1000);
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Something went wrong";
+      const msg = err.response?.data?.message || "Something went wrong.";
       setLoginMessage(null);
       setErrorMessage(msg);
     }
   };
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     axios
       .get(`${API}/profile`, {
         headers: {
@@ -70,16 +72,14 @@ export function LoginPage() {
         if (role === "admin") {
           navigate("/AdminDashboard");
         } else {
-          navigate("/Dashboardusers");
+          navigate("/DashboardUsers");
         }
       })
       .catch(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
       });
-  }
-}, [navigate]);
-
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-white dark:from-zinc-900 dark:to-zinc-800 px-4">

@@ -32,9 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginController = exports.registerController = void 0;
+exports.refreshController = exports.loginController = exports.registerController = void 0;
 const AccountServices = __importStar(require("../services/AccountServices"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jwt_1 = require("../config/jwt");
+const token_1 = require("../utils/token");
 const registerController = async (req, res) => {
     try {
         const account = await AccountServices.register(req.body);
@@ -47,11 +53,38 @@ const registerController = async (req, res) => {
 exports.registerController = registerController;
 const loginController = async (req, res) => {
     try {
-        const { account, token } = await AccountServices.login(req.body);
-        res.status(200).json({ message: "login succes", account, token });
+        const { account, accessToken, refreshToken } = await AccountServices.login(req.body);
+        if (!accessToken || !refreshToken) {
+            return res.status(500).json({ message: "failed to generate token" });
+        }
+        res.cookie("refresher_token", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        res.status(200).json({ message: "login succesfully", accessToken });
     }
     catch (error) {
-        res.status(400).json({ message: "login faild check you username or password", error });
+        res.status(400).json({ err: error.message || "Login failed" });
     }
 };
 exports.loginController = loginController;
+const refreshController = async (req, res) => {
+    try {
+        const token = req.cookies.refresher_token;
+        if (!token) {
+            return res.status(401).json({ message: "Missing refresh token" });
+        }
+        const decoded = jsonwebtoken_1.default.verify(token, jwt_1.REFRESH_TOKEN_SECRET);
+        const newAccessToken = (0, token_1.signAccessToken)({
+            id: decoded.id,
+            role: decoded.role,
+        });
+        return res.status(200).json({ accessToken: newAccessToken });
+    }
+    catch (error) {
+        return res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
+};
+exports.refreshController = refreshController;

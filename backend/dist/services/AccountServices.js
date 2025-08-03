@@ -5,13 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = void 0;
 const AccountModel_1 = __importDefault(require("../models/AccountModel"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "fall back";
+const token_1 = require("../utils/token");
 const register = async (data) => {
     const existingAccount = await AccountModel_1.default.findOne({ username: data.username });
-    if (existingAccount) {
-        throw new Error("account already Exsit!");
-    }
+    if (existingAccount)
+        throw new Error("Account already exists!");
     const newAccount = new AccountModel_1.default(data);
     await newAccount.save();
     return newAccount;
@@ -19,17 +17,12 @@ const register = async (data) => {
 exports.register = register;
 const login = async (data) => {
     const account = await AccountModel_1.default.findOne({ username: data.username });
-    if (!account) {
-        throw new Error("username or password is incorrect");
-    }
-    if (account.role !== data.role) {
+    if (!account || !(await account.passwordvalidator(data.password)))
+        throw new Error("Username or password is incorrect");
+    if (account.role !== data.role)
         throw new Error("Invalid role selected");
-    }
-    const passwordValid = await account.passwordvalidator(data.password);
-    if (!passwordValid) {
-        throw new Error("username or password is incorrect");
-    }
-    const token = jsonwebtoken_1.default.sign({ id: account._id, role: account.role }, ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
-    return { account, token };
+    const accessToken = (0, token_1.signAccessToken)({ id: account._id, role: account.role });
+    const refreshToken = (0, token_1.signRefreshToken)({ id: account._id, role: account.role });
+    return { account, accessToken, refreshToken };
 };
 exports.login = login;

@@ -14,10 +14,16 @@ const app = express()
 //MiDDLE WARE//
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}))
-app.use(cors())
+
+app.use(cors({
+  origin: "http://localhost:5173",  // ✅ for dev
+  credentials: true,
+}));
 
 //Router//
 app.use('/api', accountRoutes)
+
+
 
 //MONGO CONNECTION//
 
