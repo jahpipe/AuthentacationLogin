@@ -15,8 +15,9 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 const allowedOrigins = [
-    "http://localhost:5173",
-    "https://authentacation-login.vercel.app"
+    "http://localhost:5173", // dev
+    "http://localhost:5174", // dev alt
+    "https://authentacation-login.vercel.app" // ✅ production frontend
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
