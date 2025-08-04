@@ -15,10 +15,22 @@ const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}))
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://authentacation-login.vercel.app"
+];
+
 app.use(cors({
-  origin: "https://authentacation-login.vercel.app", // ✅ include https://
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("❌ Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
+
 
 
 //Router//
