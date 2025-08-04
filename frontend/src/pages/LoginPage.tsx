@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -10,7 +10,7 @@ export function LoginPage() {
   const [form, setForm] = useState({
     username: "",
     password: "",
-    role: "user", // must match backend expected role
+    role: "user",
   });
 
   const [loginMessage, setLoginMessage] = useState<string | null>(null);
@@ -18,7 +18,6 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,7 +46,7 @@ export function LoginPage() {
         if (account.role === "admin") {
           navigate("/AdminDashboard");
         } else {
-          navigate("/DashboardUsers"); // Adjust if route is different
+          navigate("/DashboardUsers");
         }
       }, 1000);
     } catch (err: any) {
@@ -56,30 +55,6 @@ export function LoginPage() {
       setErrorMessage(msg);
     }
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get(`${API}/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        const role = res.data?.role || localStorage.getItem("role");
-        if (role === "admin") {
-          navigate("/AdminDashboard");
-        } else {
-          navigate("/DashboardUsers");
-        }
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-      });
-  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-white dark:from-zinc-900 dark:to-zinc-800 px-4">
