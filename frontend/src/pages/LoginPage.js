@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -17,10 +17,11 @@ export function LoginPage() {
     const navigate = useNavigate();
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
     const handleRoleSelect = (role) => {
-        setForm({ ...form, role });
+        setForm((prev) => ({ ...prev, role }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,38 +38,16 @@ export function LoginPage() {
                     navigate("/AdminDashboard");
                 }
                 else {
-                    navigate("/Dashboardusers");
+                    navigate("/DashboardUsers");
                 }
             }, 1000);
         }
         catch (err) {
-            const msg = err.response?.data?.message || "Something went wrong";
+            const msg = err.response?.data?.message || "Something went wrong.";
             setLoginMessage(null);
             setErrorMessage(msg);
         }
     };
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-            axios
-                .get(`${API}/profile`)
-                .then((res) => {
-                const role = res.data?.role || localStorage.getItem("role");
-                if (role === "admin") {
-                    navigate("/AdminDashboard");
-                }
-                else {
-                    navigate("/Dashboardusers");
-                }
-            })
-                .catch(() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("role");
-                delete axios.defaults.headers.common["Authorization"];
-            });
-        }
-    }, [navigate]);
     return (_jsx("div", { className: "min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-white dark:from-zinc-900 dark:to-zinc-800 px-4", children: _jsx(Card, { className: "w-full max-w-md p-8 shadow-2xl rounded-3xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900", children: _jsxs("form", { onSubmit: handleSubmit, className: "space-y-8", children: [_jsxs("header", { className: "text-center", children: [_jsxs("h1", { className: "text-3xl font-extrabold text-gray-900 dark:text-white mb-1", children: ["Welcome Back ", _jsx("span", { className: "inline-block animate-wave", children: "\uD83D\uDC4B" })] }), _jsx("p", { className: "text-sm text-gray-500 dark:text-gray-400 font-medium", children: "Select your role and sign in to continue" })] }), _jsxs("div", { className: "flex gap-4", children: [_jsx(RoleOption, { label: "User", icon: _jsx(User, { className: "w-5 h-5" }), active: form.role === "user", onClick: () => handleRoleSelect("user") }), _jsx(RoleOption, { label: "Admin", icon: _jsx(ShieldCheck, { className: "w-5 h-5" }), active: form.role === "admin", onClick: () => handleRoleSelect("admin") })] }), _jsx(InputWithIcon, { icon: _jsx(Mail, { className: "w-5 h-5 text-gray-400" }), children: _jsx(Input, { label: "Username", name: "username", type: "text", value: form.username, onChange: handleChange, required: true, autoComplete: "username" }) }), _jsx(InputWithIcon, { icon: _jsx(Lock, { className: "w-5 h-5 text-gray-400" }), children: _jsx(Input, { label: "Password", name: "password", type: "password", value: form.password, onChange: handleChange, required: true, autoComplete: "current-password" }) }), _jsx(Button, { type: "submit", className: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition", children: "Sign In" }), loginMessage && (_jsx("p", { className: "text-green-600 text-center font-medium mt-2", children: loginMessage })), errorMessage && (_jsx("p", { className: "text-red-600 text-center font-medium mt-2", children: errorMessage }))] }) }) }));
 }
 function RoleOption({ label, icon, active, onClick, }) {
