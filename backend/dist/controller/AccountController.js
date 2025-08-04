@@ -60,10 +60,14 @@ const loginController = async (req, res) => {
         res.cookie("refresher_token", refreshToken, {
             httpOnly: true,
             secure: true,
-            sameSite: "none", // ✅ lowercase
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        res.status(200).json({ message: "login succesfully", accessToken });
+        res.status(200).json({
+            message: "login succesfully",
+            accessToken,
+            account, // ✅ this fixes your frontend
+        });
     }
     catch (error) {
         res.status(400).json({ err: error.message || "Login failed" });

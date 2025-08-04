@@ -22,11 +22,12 @@ export const loginController = async (req: Request, res: Response) => {
     }
 
     res.cookie("refresher_token", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // ✅ only secure in production
+  sameSite: "none",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 
     res.status(200).json({
       message: "login succesfully",
