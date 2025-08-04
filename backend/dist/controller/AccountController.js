@@ -59,7 +59,7 @@ const loginController = async (req, res) => {
         }
         res.cookie("refresher_token", refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production", // ✅ only secure in production
             sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });

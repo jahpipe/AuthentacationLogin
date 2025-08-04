@@ -15,7 +15,7 @@ export function LoginPage() {
     const [loginMessage, setLoginMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
     const navigate = useNavigate();
-    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
@@ -26,11 +26,18 @@ export function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API}/login`, form);
-            const { token, account } = response.data;
-            localStorage.setItem("token", token);
+            const response = await axios.post(`${API}/login`, form, {
+                withCredentials: true,
+            });
+            const { accessToken, account } = response.data;
+            if (!accessToken || !account) {
+                throw new Error("Invalid login response");
+            }
+            // Save token and role
+            localStorage.setItem("token", accessToken);
             localStorage.setItem("role", account.role);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            // Set default Axios Authorization header
+            axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
             setLoginMessage("Login successful! Redirecting...");
             setErrorMessage(null);
             setTimeout(() => {
@@ -43,6 +50,7 @@ export function LoginPage() {
             }, 1000);
         }
         catch (err) {
+            console.error("Login error:", err);
             const msg = err.response?.data?.message || "Something went wrong.";
             setLoginMessage(null);
             setErrorMessage(msg);

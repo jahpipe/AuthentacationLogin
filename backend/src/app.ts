@@ -19,10 +19,12 @@ app.use(cookieParser());
 
 
 const allowedOrigins = [
-  "http://localhost:5173", // dev
-  "http://localhost:5174", // dev alt
-  "https://authentacation-login.vercel.app" // ✅ production frontend
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://authentacation-login.vercel.app",
+  "https://authentacation-login-qrvc7cu5b-johnjovans-projects.vercel.app", // ✅ important
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {
