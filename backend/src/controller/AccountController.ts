@@ -21,12 +21,13 @@ export const loginController = async (req: Request, res: Response) => {
       return res.status(500).json({ message: "failed to generate token" });
     }
 
-    res.cookie("refresher_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+res.cookie("refresher_token", refreshToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none", // ✅ lowercase
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 
     res.status(200).json({ message: "login succesfully", accessToken });
   } catch (error: any) {
