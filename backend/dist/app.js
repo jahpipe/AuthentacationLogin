@@ -14,8 +14,19 @@ const app = (0, express_1.default)();
 //MiDDLE WARE//
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://authentacation-login.vercel.app"
+];
 app.use((0, cors_1.default)({
-    origin: "http://localhost:5173", // ✅ for dev
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("❌ Not allowed by CORS"));
+        }
+    },
     credentials: true,
 }));
 //Router//
