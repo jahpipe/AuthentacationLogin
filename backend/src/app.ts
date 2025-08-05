@@ -37,7 +37,9 @@ app.use(cors({
   credentials: true,
 }));
 
-
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
 
 
 //Router//

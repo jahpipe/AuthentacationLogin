@@ -17,9 +17,10 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 const allowedOrigins = [
-    "http://localhost:5173", // dev
-    "http://localhost:5174", // dev alt
-    "https://authentacation-login.vercel.app" // ✅ production frontend
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://authentacation-login.vercel.app",
+    "https://authentacation-login-qrvc7cu5b-johnjovans-projects.vercel.app", // ✅ important
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
