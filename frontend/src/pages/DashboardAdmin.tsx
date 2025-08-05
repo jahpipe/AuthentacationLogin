@@ -1,16 +1,13 @@
-import { AdminLayout } from "@/components/AdminLayout";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Outlet } from "react-router-dom";
 
-const DashboardAdmin = () => {
+export default function DashboardAdmin() {
   return (
-    <AdminLayout>
-      <div className="p-4">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">👑 Admin Dashboard</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Welcome to BurgerBuddy Admin Panel! Use the sidebar to manage your system.
-        </p>
-      </div>
-    </AdminLayout>
+    <div className="flex">
+      <Sidebar />
+      <main className="ml-64 w-full p-6">
+        <Outlet />
+      </main>
+    </div>
   );
-};
-
-export default DashboardAdmin;
+}
